@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Плотность солярки</string>
+    <string name="dens20c">при 20°С по паспорту кг/м³</string>
+    <string name="dens">Плотность</string>
+    <string name="uDens">удельный вес</string>
+    <string name="hintStartDens">Введите плотность по паспорту в кг/м³</string>
+    <string name="kgm3">кг/м³</string>
+    <string name="densStart">822</string>
+    <string name="kgStart">9111</string>
+</resources>
