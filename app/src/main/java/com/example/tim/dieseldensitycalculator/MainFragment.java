@@ -9,6 +9,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,18 +52,23 @@ public class MainFragment extends Fragment {
         thisView = inflater.inflate(R.layout.main_fragment,null);//, container, false);        return view;
         DensStart=820;
         KGStart=9000;
-        KGCalc=8000;
+        KGCalc=9000;
         TempCalc=25;
         prt = NumberFormat.getInstance();
 
         edDensStart = thisView.findViewById(R.id.editDensStart);
+        edDensStart.setFilters(new InputFilter[]{new InputFilterMinMax(800, 870)});
+
         edKGStart = thisView.findViewById(R.id.editKGStart);
+        edKGStart.setFilters(new InputFilter[]{new InputFilterMinMax(1, 40000)});
         edLStart = thisView.findViewById(R.id.editLStart);
         edKGCalc = thisView.findViewById(R.id.editKGCalc);
+        edKGCalc.setFilters(new InputFilter[]{new InputFilterMinMax(1, 40000)});
         textLCalc = thisView.findViewById(R.id.textLCalc);
         textuWeightStart = thisView.findViewById(R.id.textuWeightStart);
         textuWeightCalc = thisView.findViewById(R.id.textuWeightCalc);
         edTempCalc = thisView.findViewById(R.id.editDegree);
+        edTempCalc.setFilters(new InputFilter[]{new InputFilterMinMax(-35, 50)});
         textDensCalc = thisView.findViewById(R.id.textDensCalc);
         uiSetStart();
 
@@ -180,7 +187,7 @@ public class MainFragment extends Fragment {
     private void uiUpdateCalc ()
     {
         DensStart=Double.parseDouble(edDensStart.getText().toString());
-        String qwer=edKGStart.getText().toString().replaceAll(" ","");;
+        String qwer=edKGStart.getText().toString().replaceAll(" ","");
         KGStart=Double.parseDouble(qwer);
         edLStart.setText(prt.format((KGStart/DensStart)*1000));
         textuWeightStart.setText(prt.format(DensStart*9.81));
@@ -192,4 +199,29 @@ public class MainFragment extends Fragment {
         LitrCalc= KGCalc / DensCalc * 1000 ;
         textLCalc.setText(prt.format(LitrCalc));
     }
+    // фильтр для ввода колва повторов
+    public class InputFilterMinMax implements InputFilter {
+        private int min;
+        private int max;
+
+        public InputFilterMinMax(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            //noinspection EmptyCatchBlock
+            try {
+                String strSource=source.toString().replaceAll(" ","");
+                int input = Integer.parseInt(dest.subSequence(0, dstart).toString() + strSource + dest.subSequence(dend, dest.length()));
+                if (isInRange(min, max, input))
+                    return null;
+            } catch (NumberFormatException nfe) { }
+            return "";
+        }
+        private boolean isInRange(int a, int b, int c) {
+            return b > a ? c >= a && c <= b : c >= b && c <= a;
+        }
+    }
+
 }
